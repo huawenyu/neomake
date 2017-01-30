@@ -48,6 +48,7 @@ Execute (Neomake: handle result for current window):
   call g:NeomakeSetupAutocmdWrappers()
   let orig_winnr = winnr()
   call neomake#Make(1, [g:neomake_test_sleep_efm_maker])
+  lgetexpr ''
   if neomake#has_async_support()
     new
     NeomakeTestsWaitForFinishedJobs
@@ -395,3 +396,11 @@ Execute (Neomake: append_file from settings):
   NeomakeTestsWaitForFinishedJobs
   AssertEqual getloclist(0),
     \ [{'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'output'}]
+
+Execute (Quickfix list should be cleared only after maker finished):
+  cgetexpr 'foo'
+  AssertEqual getqflist()[0].text, 'foo'
+
+  NeomakeSh echo 1
+  AssertEqual getqflist()[0].text, 'foo'
+  NeomakeTestsWaitForFinishedJobs
