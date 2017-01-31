@@ -402,5 +402,9 @@ Execute (Quickfix list should be cleared only after maker finished):
   AssertEqual getqflist()[0].text, 'foo'
 
   NeomakeSh echo 1
-  AssertEqual getqflist()[0].text, 'foo'
+  if neomake#has_async_support()
+    AssertEqual getqflist()[0].text, 'foo'
+  else
+    AssertEqual getqflist()[0].text, '1'
+  endif
   NeomakeTestsWaitForFinishedJobs
