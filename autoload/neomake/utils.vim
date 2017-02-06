@@ -169,6 +169,7 @@ endfunction
 let s:command_maker = {
             \ 'remove_invalid_entries': 0,
             \ }
+
 function! s:command_maker.fn(jobinfo) dict abort
     let maker = filter(copy(self), "v:key !~# '^__' && v:key !~# 'fn'")
     let argv = split(&shell) + split(&shellcmdflag)

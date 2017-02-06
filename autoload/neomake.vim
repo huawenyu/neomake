@@ -1335,6 +1335,30 @@ function! neomake#ShCommand(bang, sh_command, ...) abort
     return get(s:Make(options), 0, -1)
 endfunction
 
+function! neomake#RunCommand(bang, ...) abort
+    tabnew | enew | call termopen(join(a:000)) | startinsert
+endfunction
+
+function! neomake#Command(bang, sh_command, ...) abort
+    let maker = neomake#utils#MakerFromCommand(a:sh_command)
+    let maker.name = 'sh: '.a:sh_command
+    let maker.buffer_output = !a:bang
+    let maker.errorformat = '%m'
+    let options = {'enabled_makers': [maker]}
+    if a:0
+        call extend(options, a:1)
+    endif
+
+    let cmaker = neomake#GetEnabledMakers(&filetype)
+    if !empty(cmaker)
+        let objmaker = neomake#GetMaker(cmaker[0], &filetype)
+        let maker.errorformat = objmaker.errorformat
+    endif
+    "call neomake#utils#DebugMessage("wilson make-list: ". string(cmaker))
+    "call neomake#utils#DebugMessage("wilson maker: ". string(neomake#GetMaker('gcc', 'c')))
+    return get(s:Make(options), 0, -1)
+endfunction
+
 function! neomake#Sh(sh_command, ...) abort
     " Deprecated, but documented.
     let options = a:0 ? { 'exit_callback': a:1 } : {}
